@@ -27,7 +27,7 @@ app.get("*", (req, res) => {
 // database and server connection 
 const start = async () => {
     try {
-        await connectDB(process.env.Mongo_URI)
+        await connectDB(process.env.Mongo_URI) // please include your db connection string in the .env file
         console.log("Database connected...")
         app.listen(PORT, () => {
             console.log(`Server connected to http://localhost:${PORT}`)
