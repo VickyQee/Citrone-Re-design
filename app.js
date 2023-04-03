@@ -3,7 +3,6 @@ const express = require("express")
 const { StatusCodes } = require("http-status-codes")
 const morgan = require("morgan")
 const connectDB = require("./db/connect")
-const errorHandler = require("./errorHandler/errorHandler")
 require("dotenv").config()
 
 const app = express()
