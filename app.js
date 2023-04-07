@@ -1,40 +1,43 @@
-// modules 
-const express = require("express")
-const { StatusCodes } = require("http-status-codes")
-const morgan = require("morgan")
-const connectDB = require("./db/connect")
-require("dotenv").config()
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+const { response } = require('./src/utils');
 
-const app = express()
-const PORT = process.env.PORT || 3000 
 
-// application middleware
-app.use(morgan("dev"))
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// MIDDLEWARE
+app.use(cors({ origin: "*" }))
 app.use(express.json())
-app.use(express.urlencoded({extended: false}))
-app.use(errorHandler)
+app.use(express.urlencoded({ extended: true }))
+app.use(morgan("dev"))
 
+
+
+// MAIN ROUTE
 app.get("/", (req, res) => {
-    console.log("check again...");
-    res.status(200).json({message: "Welcome..."})
+  // 200 -> OK
+  res.status(200).send(response("Hello from CITRONE API", null))
 })
 
-app.get("*", (req, res) => {
-    res.status(StatusCodes.BAD_REQUEST);
-    throw new Error ("Invalid Url, please try again")
+// API ROUTES
+const routes = require("./src/routes")
+app.use("/api", routes)
+
+// ERROR ROUTES -> INCASE THE USER ENTERS AN INVALID ROUTE
+app.use("*", (req, res) => {
+  // 404 -> NOT FOUND
+  res.status(404).send(response("Invalid Route!", null, false))
 })
 
-// database and server connection 
-const start = async () => {
-    try {
-        await connectDB(process.env.Mongo_URI) // please include your db connection string in the .env file
-        console.log("Database connected...")
-        app.listen(PORT, () => {
-            console.log(`Server connected to http://localhost:${PORT}`)
-        })
-    } catch (error) {
-        console.log("Unable to connect", error.message);
-    }
-}
 
-start()
+// MONGODB CONNECTION HERE
+const database = require("./src/database");
+
+app.listen(PORT, async () => {
+  await database()
+  console.log(`server running on port http://localhost:${PORT}`)
+})
+
+
